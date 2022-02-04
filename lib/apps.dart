@@ -1,18 +1,20 @@
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'app_state.dart';
+import 'package:launcher_riverpod/app_state.dart';
 
-final modeProvider = StateProvider<DisplayMode>((ref) => DisplayMode.Grid);
-
-class AppsPage extends StatefulWidget {
-  @override
-  _AppsPageState createState() => _AppsPageState();
-}
+final modeProvider = StateProvider<DisplayMode>((ref) => DisplayMode.grid);
 
 enum DisplayMode {
-  Grid,
-  List,
+  grid,
+  list,
+}
+
+class AppsPage extends StatefulWidget {
+  const AppsPage({Key? key}) : super(key: key);
+
+  @override
+  _AppsPageState createState() => _AppsPageState();
 }
 
 class _AppsPageState extends State<AppsPage>
@@ -26,59 +28,67 @@ class _AppsPageState extends State<AppsPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Consumer(
-      builder: (context, watch, _) {
-        final appsInfo = watch(appsProvider);
-        final mode = watch(modeProvider);
+      builder: (context, ref, child) {
+        final appsInfo = ref.watch(appsProvider);
+        final mode = ref.watch(modeProvider.state);
+
         return Scaffold(
-            extendBodyBehindAppBar: true,
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              actions: [
-                IconButton(
-                  icon: Icon(mode.state == DisplayMode.Grid
-                      ? Icons.list
-                      : Icons.grid_on),
-                  onPressed: () {
-                    mode.state = mode.state == DisplayMode.Grid
-                        ? DisplayMode.List
-                        : DisplayMode.Grid;
-                  },
-                )
-              ],
-            ),
-            body: appsInfo.when(
-                data: (List<Application> apps) => mode.state == DisplayMode.List
-                    ? ListView.builder(
-                        itemCount: apps.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          ApplicationWithIcon app = apps[index];
-                          return ListTile(
-                            leading: Image.memory(
-                              app.icon,
-                              width: 40,
-                            ),
-                            title: Text(app.appName),
-                            onTap: () => DeviceApps.openApp(app.packageName),
-                          );
-                        },
-                      )
-                    : GridView(
-                        padding: const EdgeInsets.fromLTRB(
-                            16.0, kToolbarHeight + 16.0, 16.0, 16.0),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 8.0,
-                          mainAxisSpacing: 8.0,
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            title: const Text('RiverPod Launcher'),
+            elevation: 1,
+            backgroundColor: Colors.transparent,
+            actions: [
+              IconButton(
+                icon: Icon(mode.state == DisplayMode.grid
+                    ? Icons.list
+                    : Icons.grid_on),
+                onPressed: () {
+                  mode.state = mode.state == DisplayMode.grid
+                      ? DisplayMode.list
+                      : DisplayMode.grid;
+                },
+              ),
+            ],
+          ),
+          body: appsInfo.when(
+            data: (List<Application> apps) => mode.state == DisplayMode.list
+                ? ListView.builder(
+                    itemCount: apps.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      ApplicationWithIcon app =
+                          apps[index] as ApplicationWithIcon;
+                      return ListTile(
+                        leading: Image.memory(
+                          app.icon,
+                          width: 30,
                         ),
-                        children: [
-                          ...apps.map((app) => AppGridItem(
-                                application: app,
-                              ))
-                        ],
-                      ),
-                loading: () => CircularProgressIndicator(),
-                error: (e, s) => Container()));
+                        title: Text(app.appName),
+                        onTap: () => DeviceApps.openApp(app.packageName),
+                      );
+                    })
+                : GridView(
+                    padding: const EdgeInsets.fromLTRB(
+                        16.0, kToolbarHeight + 16.0, 16.0, 16.0),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                    ),
+                    children: [
+                      ...apps.map((e) => AppGridItem(
+                          applicationWithIcon: e as ApplicationWithIcon))
+                    ],
+                  ),
+            error: (e, s) => const SizedBox(),
+            loading: () => const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+        );
       },
     );
   }
@@ -88,33 +98,30 @@ class _AppsPageState extends State<AppsPage>
 }
 
 class AppGridItem extends StatelessWidget {
-  final ApplicationWithIcon application;
-  const AppGridItem({
-    this.application,
-    Key key,
-  }) : super(key: key);
+  const AppGridItem({Key? key, required this.applicationWithIcon})
+      : super(key: key);
 
+  final ApplicationWithIcon applicationWithIcon;
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        DeviceApps.openApp(application.packageName);
-      },
+      onTap: () => DeviceApps.openApp(applicationWithIcon.packageName),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(8.0),
             child: Image.memory(
-              application.icon,
+              applicationWithIcon.icon,
               fit: BoxFit.contain,
               width: 40,
             ),
           ),
           Text(
-            application.appName,
+            applicationWithIcon.appName,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
-          ),
+            style: const TextStyle(fontSize: 9),
+          )
         ],
       ),
     );
