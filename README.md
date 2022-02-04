@@ -2,7 +2,7 @@
 
 ## Preview
 
-<img src="screenshots/3.png" height="480px" /> <img src="screenshots/1.png" height="480px" /> <img src="screenshots/2.png" height="480px" />
+<img src="screenshots/3.jpg" height="480px" /> <img src="screenshots/1.jpg" height="480px" /> <img src="screenshots/2.jpg" height="480px" />
 
 ## Features
 
