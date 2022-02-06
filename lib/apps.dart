@@ -9,17 +9,18 @@ enum DisplayMode {
   grid,
   list,
 }
+// failed issue was caused by either Application and ApplicationWithIcon
+// final appNameIcon = StateNotifierProvider<AppIconName, ApplicationWithIcon>(
+//     (ref) => AppIconName(saveIconAppName: saved));
 
-final appNameIcon =
-    StateNotifierProvider<AppIconName, List<ApplicationWithIcon>>(
-        (ref) => AppIconName(saveIconAppName: saved));
+// class AppIconName extends StateNotifier<ApplicationWithIcon> {
+//   AppIconName({this.saveIconAppName}) : super(saveIconAppName!);
+//   ApplicationWithIcon? saveIconAppName;
+// }
 
-class AppIconName extends StateNotifier<List<ApplicationWithIcon>> {
-  AppIconName({this.saveIconAppName}) : super(saveIconAppName!);
-  List<ApplicationWithIcon>? saveIconAppName;
-}
+// final userProvider = StateProvider<Application>((ref) => valueIconApps);
 
-dynamic saved;
+// Application? saved;
 
 class AppsPage extends ConsumerWidget {
   const AppsPage({Key? key}) : super(key: key);
@@ -73,9 +74,6 @@ class AppsPage extends ConsumerWidget {
                 children: [
                   ...apps.map(
                     (valueIconApp) {
-                      saved = valueIconApp;
-                      print(saved);
-                      // return const AppGridItem();
                       return AppGridItem(
                           applicationWithIcon:
                               valueIconApp as ApplicationWithIcon);
@@ -93,37 +91,6 @@ class AppsPage extends ConsumerWidget {
     );
   }
 }
-
-// class AppGridItem extends ConsumerWidget {
-//   const AppGridItem({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final applicationWithIcon = ref.watch(appNameIcon.notifier).saveIconAppName;
-
-//     return InkWell(
-//       onTap: () => DeviceApps.openApp(applicationWithIcon!.packageName),
-//       child: Column(
-//         children: [
-//           Container(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Image.memory(
-//               applicationWithIcon!.icon,
-//               fit: BoxFit.contain,
-//               width: 40,
-//             ),
-//           ),
-//           Text(
-//             applicationWithIcon.appName,
-//             overflow: TextOverflow.ellipsis,
-//             maxLines: 1,
-//             style: const TextStyle(fontSize: 9),
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class AppGridItem extends StatelessWidget {
   const AppGridItem({Key? key, required this.applicationWithIcon})
@@ -155,3 +122,39 @@ class AppGridItem extends StatelessWidget {
     );
   }
 }
+
+
+
+// class AppGridItem extends ConsumerWidget {
+//   const AppGridItem({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     // final applicationWithIcon = ref.watch(appNameIcon.notifier).saveIconAppName;
+//     final applicationWithIcon = ref.watch(userProvider);
+//     print(saved);
+//     // ApplicationWithIcon appld = applicationWithIcon;
+//     ApplicationWithIcon icons = saved as ApplicationWithIcon;
+//     return InkWell(
+//       onTap: () => DeviceApps.openApp( applicationWithIcon.packageName),
+//       child: Column(
+//         children: [
+//           Container(
+//             padding: const EdgeInsets.all(8.0),
+//             child: Image.memory(
+//               icons.icon,
+//               fit: BoxFit.contain,
+//               width: 40,
+//             ),
+//           ),
+//           Text(
+//             applicationWithIcon.appName,
+//             overflow: TextOverflow.ellipsis,
+//             maxLines: 1,
+//             style: const TextStyle(fontSize: 9),
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
