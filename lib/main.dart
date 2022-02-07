@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:launcher_riverpod/apps.dart';
+import 'package:launcher_riverpod/example/state_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyAppStateProvider());
 }
 
 class MyApp extends StatelessWidget {

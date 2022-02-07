@@ -20,14 +20,16 @@ enum DisplayMode {
 
 // final userProvider = StateProvider<Application>((ref) => valueIconApps);
 
-// Application? saved;
+final saveds = FutureProvider<Application>((ref) async => await saved);
+
+dynamic saved;
 
 class AppsPage extends ConsumerWidget {
   const AppsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appsInfo = ref.watch(appsProvider);
+    AsyncValue<List<Application>> appsInfo = ref.watch(appsProvider);
     final mode = ref.watch(modeProvider.state);
 
     return Scaffold(
@@ -74,6 +76,8 @@ class AppsPage extends ConsumerWidget {
                 children: [
                   ...apps.map(
                     (valueIconApp) {
+                      saved =
+                          FutureProvider<Application>((ref) => valueIconApp);
                       return AppGridItem(
                           applicationWithIcon:
                               valueIconApp as ApplicationWithIcon);
@@ -99,26 +103,33 @@ class AppGridItem extends StatelessWidget {
   final ApplicationWithIcon applicationWithIcon;
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => DeviceApps.openApp(applicationWithIcon.packageName),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.memory(
-              applicationWithIcon.icon,
-              fit: BoxFit.contain,
-              width: 40,
-            ),
+    return Consumer(
+      builder: (context, ref, child) {
+        AsyncValue<Application> test = ref.watch(saveds);
+        print(test);
+
+        return InkWell(
+          onTap: () => DeviceApps.openApp(applicationWithIcon.packageName),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.memory(
+                  applicationWithIcon.icon,
+                  fit: BoxFit.contain,
+                  width: 40,
+                ),
+              ),
+              Text(
+                applicationWithIcon.appName,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(fontSize: 9),
+              )
+            ],
           ),
-          Text(
-            applicationWithIcon.appName,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: const TextStyle(fontSize: 9),
-          )
-        ],
-      ),
+        );
+      },
     );
   }
 }
