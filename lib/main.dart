@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:launcher_riverpod/apps.dart';
+
+import 'appbar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
             builder: (context) {
               switch (settings.name) {
                 case "apps":
-                  return const AppsPage();
+                  return const ShowHideAppBar();
                 default:
                   return const HomePage();
               }
@@ -46,35 +47,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: Text('Home')),
       backgroundColor: Colors.transparent,
       body: Container(),
-      // body: Stack(
-      //   children: [
-      //     SizedBox(
-      //       height: double.infinity,
-      //       width: double.infinity,
-      //       child: Container(
-      //         decoration: const BoxDecoration(
-      //           image: DecorationImage(
-      //             image: AssetImage(
-      //               'assets/images/omen.jpg',
-      //             ),
-      //             fit: BoxFit.cover,
-      //           ),
-      //         ),
-      //         child: const Center(
-      //           child: Text(
-      //             'RiverPod Launcher',
-      //             style: TextStyle(
-      //                 color: Color.fromARGB(255, 255, 255, 255), fontSize: 30),
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
-
       bottomNavigationBar: SafeArea(
         child: BottomAppBar(
           color: Colors.transparent,
